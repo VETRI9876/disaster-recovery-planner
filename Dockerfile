@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port the app will run on
-EXPOSE 8050
+EXPOSE 8085
 
 # Command to run the application
 CMD ["python", "dr_resilience_app.py"]
