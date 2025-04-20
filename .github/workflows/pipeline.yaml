@@ -3,7 +3,7 @@ name: Docker Image Build and Push to JFrog
 on:
   push:
     branches:
-      - main  # Adjust this to the branch you want the action to trigger on (e.g., 'main')
+      - main  # Adjust this if you're using a different branch
 
 jobs:
   build:
@@ -23,24 +23,20 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: trialn9oork.jfrog.io  # Your JFrog registry URL
-          username: ${{ secrets.JFROG_USERNAME }}  # GitHub secret containing your JFrog username (email)
-          password: ${{ secrets.JFROG_API_KEY }}  # GitHub secret containing your JFrog API key
+          username: ${{ secrets.JFROG_USERNAME }}  # GitHub secret for JFrog username
+          password: ${{ secrets.JFROG_API_KEY }}  # GitHub secret for JFrog API key
 
       # Step 4: Build the Docker image
       - name: Build the Docker image
         run: |
-          docker build -t trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app .  # Replace with your repository details
+          docker build -t trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app .
 
       # Step 5: Push the Docker image to JFrog repository
       - name: Push Docker image to JFrog
         run: |
-          docker push trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app  # Replace with your repository details
+          docker push trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app
 
-      # Step 6: Run the Docker container
+      # Step 6: Run the Docker container and expose correct port (8085:8085)
       - name: Run Docker container and expose port
         run: |
-          docker run -d -p 8085:8050 trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app
-
-      # Step 7: Log out from JFrog (to clean up)
-      - name: Logout from JFrog
-        run: docker logout trialn9oork.jfrog.io
+          docker run -d -p 8085:8085 trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app
