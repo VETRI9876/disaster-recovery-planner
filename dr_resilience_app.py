@@ -91,4 +91,4 @@ def update_output(n_clicks, name, rto, rpo, status):
 
 # Run server (Make it available on all network interfaces)
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8050)
+    app.run(debug=True, host='0.0.0.0', port=8085)
