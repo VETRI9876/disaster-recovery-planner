@@ -73,23 +73,18 @@ def update_output(n_clicks, name, rto, rpo, status):
                 'Status': status
             }])
             data_store = pd.concat([data_store, new_row], ignore_index=True)
+            # Clear inputs
+            name, rto, rpo, status = '', None, None, None
             error_message = ''
 
     # Create the table
-    table = html.Table(
-        [html.Thead(html.Tr([html.Th(col) for col in data_store.columns])),
-         html.Tbody([
-             html.Tr([html.Td(data_store.iloc[i][col]) for col in data_store.columns])
-             for i in range(len(data_store))
-         ])],
-        style={
-            'width': '100%',
-            'border': '1px solid #ddd',
-            'textAlign': 'center',
-            'borderRadius': '5px',
-            'marginTop': '20px'
-        }
-    )
+    table = html.Table([
+        html.Thead(html.Tr([html.Th(col) for col in data_store.columns])),
+        html.Tbody([
+            html.Tr([html.Td(data_store.iloc[i][col]) for col in data_store.columns])
+            for i in range(len(data_store))
+        ])
+    ], style={'width': '100%', 'border': '1px solid #ddd', 'textAlign': 'center', 'border-radius': '5px', 'marginTop': '20px'})
 
     # Create the pie chart
     fig = px.pie(data_store, names='Status', title='System Readiness Status')
