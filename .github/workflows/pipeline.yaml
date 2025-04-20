@@ -1,34 +1,37 @@
-image: python:3.9  # The base image
+name: Build and Push Docker Image to JFrog
 
-pipelines:
-  default:
-    - step:
-        name: Install dependencies and run tests
-        caches:
-          - pip
-        script:
-          - pip install -r requirements.txt
-          - python -m unittest discover
+on:
+  push:
+    branches:
+      - main  # Or specify the branch you want to trigger on
+  pull_request:
+    branches:
+      - main  # Or specify the branch you want to trigger on
 
-    - step:
-        name: Set up Docker and Build Docker image
-        services:
-          - docker  # Enable Docker service for this step
-        script:
-          - docker --version  # Check Docker version (optional)
-          - docker build -t python-flask-app .  # Build your Docker image
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
 
-    - step:
-        name: Login to Docker Hub and push the image
-        services:
-          - docker  # Enable Docker service for this step
-        script:
-          - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD  # Log in to Docker Hub
-          - docker tag python-flask-app:latest vetri20/python-flask-app:latest  # Tag the image
-          - docker push vetri20/python-flask-app:latest  # Push the image to Docker Hub
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    - step:
-        name: Deploy to Kubernetes
-        deployment: production
-        script:
-          - kubectl apply -f k8s/deployment.yaml  # Apply Kubernetes deployment
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to JFrog Artifactory
+      uses: docker/login-action@v2
+      with:
+        registry: trialn9oork.jfrog.io
+        username: ${{ secrets.JFROG_USERNAME }}   # Add your JFrog username in GitHub Secrets
+        password: ${{ secrets.JFROG_API_KEY }}    # Add your JFrog API Key in GitHub Secrets
+
+    - name: Build Docker image
+      run: |
+        docker build -t trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app:${{ github.sha }} .
+        docker tag trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app:${{ github.sha }} trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app:latest
+
+    - name: Push Docker image to JFrog
+      run: |
+        docker push trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app:${{ github.sha }}
+        docker push trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app:latest
