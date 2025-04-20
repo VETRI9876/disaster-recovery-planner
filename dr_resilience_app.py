@@ -78,13 +78,10 @@ def update_output(n_clicks, name, rto, rpo, status):
             error_message = ''
 
     # Create the table
-    table = html.Table([
-        html.Thead(html.Tr([html.Th(col) for col in data_store.columns])),
-        html.Tbody([
-            html.Tr([html.Td(data_store.iloc[i][col]) for col in data_store.columns])
-            for i in range(len(data_store))
-        ])
-    ], style={'width': '100%', 'border': '1px solid #ddd', 'textAlign': 'center', 'border-radius': '5px', 'marginTop': '20px'})
+    table = html.Table([html.Thead(html.Tr([html.Th(col) for col in data_store.columns])),
+                       html.Tbody([html.Tr([html.Td(data_store.iloc[i][col]) for col in data_store.columns])
+                                   for i in range(len(data_store))])], 
+                      style={'width': '100%', 'border': '1px solid #ddd', 'textAlign': 'center', 'border-radius': '5px', 'marginTop': '20px'})
 
     # Create the pie chart
     fig = px.pie(data_store, names='Status', title='System Readiness Status')
@@ -92,10 +89,6 @@ def update_output(n_clicks, name, rto, rpo, status):
     return table, fig, error_message
 
 
-# Run server
+# Run server (Make it available on all network interfaces)
 if __name__ == '__main__':
-    app.run(debug=True)
-
-
-#RTO: 2 hours (You need to bring the system back online within 2 hours of failure)
-#RPO: 1 hour (You can afford to lose up to 1 hour's worth of data)
+    app.run(debug=True, host='0.0.0.0', port=8050)
