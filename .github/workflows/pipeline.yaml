@@ -39,7 +39,7 @@ jobs:
       # Step 6: Run the Docker container
       - name: Run Docker container and expose port
         run: |
-          docker run -d -p 8085:8050 trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app  # Expose port 8050 to 8080
+          docker run -d -p 8085:8050 trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app
 
       # Step 7: Log out from JFrog (to clean up)
       - name: Logout from JFrog
