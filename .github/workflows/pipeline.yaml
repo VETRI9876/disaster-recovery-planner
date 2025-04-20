@@ -36,6 +36,11 @@ jobs:
         run: |
           docker push trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app  # Replace with your repository details
 
-      # Step 6: Log out from JFrog (to clean up)
+      # Step 6: Run the Docker container
+      - name: Run Docker container and expose port
+        run: |
+          docker run -d -p 8080:8050 trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app  # Expose port 8050 to 8080
+
+      # Step 7: Log out from JFrog (to clean up)
       - name: Logout from JFrog
         run: docker logout trialn9oork.jfrog.io
