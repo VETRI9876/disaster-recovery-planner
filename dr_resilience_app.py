@@ -80,7 +80,7 @@ def update_output(n_clicks, name, rto, rpo, status):
     # Create the table
     table = html.Table([html.Thead(html.Tr([html.Th(col) for col in data_store.columns])),
                        html.Tbody([html.Tr([html.Td(data_store.iloc[i][col]) for col in data_store.columns])
-                                   for i in range(len(data_store))])], 
+                                   for i in range(len(data_store))]), 
                       style={'width': '100%', 'border': '1px solid #ddd', 'textAlign': 'center', 'border-radius': '5px', 'marginTop': '20px'})
 
     # Create the pie chart
