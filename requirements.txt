@@ -1,5 +1,5 @@
 dash
 pandas
 plotly
-selenium
-webdriver-manager
+selenium==4.20.0
+webdriver-manager==4.0.1
