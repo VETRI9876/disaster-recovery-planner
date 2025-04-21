@@ -1,4 +1,4 @@
-name: CI/CD Pipeline - JFrog + AKS + Monitoring
+name: CI/CD Pipeline - JFrog + AKS + ELK Monitoring
 
 on:
   push:
@@ -33,13 +33,13 @@ jobs:
           username: ${{ secrets.JFROG_USERNAME }}
           password: ${{ secrets.JFROG_API_KEY }}
 
-      # Step 4: Build and Push Docker Image
+      # Step 4: Build and Push Docker Image to JFrog
       - name: Build and Push Docker Image to JFrog
         run: |
           docker build -t $JFROG_REGISTRY/$IMAGE_NAME:latest .
           docker push $JFROG_REGISTRY/$IMAGE_NAME:latest
 
-      # Step 5: Run Docker Container for Local Testing
+      # Step 5: Run Docker Container Locally
       - name: Run Docker Container Locally
         run: |
           docker run -d -p 8085:8085 $JFROG_REGISTRY/$IMAGE_NAME:latest
@@ -61,8 +61,43 @@ jobs:
         run: |
           az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
 
-      # Step 9: Deploy App to AKS (using YAML files in repo)
+      # Step 9: Deploy App to AKS
       - name: Deploy App to AKS
         run: |
           kubectl apply -f deployment.yaml
           kubectl apply -f service.yaml
+
+      # Step 10: Install Helm
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+      # Step 11: Add Elastic Helm Repo
+      - name: Add Elastic Helm Repo
+        run: |
+          helm repo add elastic https://helm.elastic.co
+          helm repo update
+
+      # Step 12: Deploy Elasticsearch
+      - name: Deploy Elasticsearch
+        run: |
+          helm upgrade --install elasticsearch elastic/elasticsearch \
+            --namespace $K8S_NAMESPACE \
+            --set replicas=1 \
+            --set minimumMasterNodes=1
+
+      # Step 13: Deploy Kibana
+      - name: Deploy Kibana
+        run: |
+          helm upgrade --install kibana elastic/kibana \
+            --namespace $K8S_NAMESPACE \
+            --set service.type=LoadBalancer \
+            --set elasticsearchURL=http://elasticsearch-master:9200
+
+      # Step 14: Deploy Filebeat for Log Forwarding
+      - name: Deploy Filebeat
+        run: |
+          helm upgrade --install filebeat elastic/filebeat \
+            --namespace $K8S_NAMESPACE \
+            --set elasticsearch.hosts="{http://elasticsearch-master:9200}" \
+            --set kibana.host="http://kibana-kibana:5601"
