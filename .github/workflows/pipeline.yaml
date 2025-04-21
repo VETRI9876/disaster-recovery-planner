@@ -66,30 +66,3 @@ jobs:
         run: |
           kubectl apply -f deployment.yaml
           kubectl apply -f service.yaml
-
-      # Step 10: Set up Helm
-      - name: Setup Helm
-        uses: azure/setup-helm@v3
-
-      # Step 11: Install Prometheus and Grafana
-      - name: Install Prometheus and Grafana
-        run: |
-          kubectl create namespace monitoring || true
-
-          helm repo remove prometheus-community || true
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-          helm repo update
-
-          helm upgrade --install prometheus prometheus-community/prometheus --namespace monitoring
-
-          helm upgrade --install grafana prometheus-community/grafana \
-            --namespace monitoring \
-            --set adminPassword='admin' \
-            --set service.type=LoadBalancer
-
-      # Step 12: Output Monitoring Access Info
-      - name: Show Grafana External IP
-        run: |
-          echo "Waiting for Grafana LoadBalancer IP..."
-          sleep 30
-          kubectl get svc -n monitoring -l app.kubernetes.io/name=grafana
