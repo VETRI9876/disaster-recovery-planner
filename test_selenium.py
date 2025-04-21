@@ -55,7 +55,7 @@ def test_application():
         driver.quit()
 
         # ✅ Success message
-        print("🎉 Whole application successfully tested!")
+        print("✅ Whole application successfully tested!")
 
     except Exception as e:
         print(f"❌ Test failed: {e}")
