@@ -40,3 +40,9 @@ jobs:
       - name: Run Docker container and expose port
         run: |
           docker run -d -p 8085:8085 trialn9oork.jfrog.io/dr-dash-docker-local/dr-dash-app
+
+      # Step 7: Install Selenium and run the test
+      - name: Install Selenium and run the test
+        run: |
+          pip install selenium webdriver-manager
+          python test_selenium.py
