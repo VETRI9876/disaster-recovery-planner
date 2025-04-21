@@ -11,17 +11,18 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     libgtk-3-0 \
     libgbm-dev \
+    fonts-liberation \
+    libappindicator3-1 \
+    libnss3 \
+    lsb-release \
+    xdg-utils \
+    --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Chrome
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-RUN dpkg -i google-chrome-stable_current_amd64.deb
-RUN apt-get install -f
-
-# Install ChromeDriver
-RUN wget https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_linux64.zip
-RUN unzip chromedriver_linux64.zip
-RUN mv chromedriver /usr/local/bin/
+RUN echo "deb [signed-by=/usr/share/keyrings/google-archive-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | tee -a /etc/apt/sources.list.d/google-chrome.list
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | tee /usr/share/keyrings/google-archive-keyring.gpg
+RUN apt-get update && apt-get install -y google-chrome-stable
 
 # Set the working directory inside the container
 WORKDIR /app
