@@ -1,42 +1,39 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import time
-import tempfile
 
 def test_application():
     try:
-        # Set up Chrome WebDriver with ChromeOptions
         chrome_options = Options()
-        
-        # Create a temporary directory for user data
-        user_data_dir = tempfile.mkdtemp()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--window-size=1920x1080")
 
-        # Add user-data-dir argument
-        chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
-        
-        # Initialize the WebDriver
+        # Create a unique user data dir for each run to avoid lock issues
+        chrome_options.add_argument("--user-data-dir=/tmp/chrome-user-data")
+
+        # Initialize the Chrome driver
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-        # Navigate to the URL of your application
-        driver.get('http://localhost:8085')  # Adjust this URL if needed for your app
+        driver.get('http://localhost:8085')
 
-        # Wait for the page to load
         time.sleep(2)
 
-        # Check if a specific element exists (you can change the selector)
-        element = driver.find_element(By.TAG_NAME, 'h1')  # Replace with your actual element
+        element = driver.find_element(By.TAG_NAME, 'h1')  # Update tag as per your page
         if element:
-            print("Success: The page loaded and the element was found!")
+            print("✅ Success: Element found:", element.text)
         else:
-            print("Error: The element was not found.")
-        
-        # Close the browser
+            print("❌ Error: Element not found.")
+
         driver.quit()
+
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"❌ Error: {str(e)}")
 
 if __name__ == "__main__":
     test_application()
