@@ -76,6 +76,7 @@ jobs:
         run: |
           kubectl create namespace monitoring || true
 
+          helm repo remove prometheus-community || true
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
 
@@ -88,4 +89,7 @@ jobs:
 
       # Step 12: Output Monitoring Access Info
       - name: Show Grafana External IP
-        run: kubectl get svc -n monitoring
+        run: |
+          echo "Waiting for Grafana LoadBalancer IP..."
+          sleep 30
+          kubectl get svc -n monitoring -l app.kubernetes.io/name=grafana
