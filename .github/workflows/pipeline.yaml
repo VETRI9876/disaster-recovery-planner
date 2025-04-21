@@ -56,33 +56,22 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Step 8: Create AKS Cluster (if not exists)
-      - name: Create AKS Cluster
-        run: |
-          az aks create \
-            --resource-group $RESOURCE_GROUP \
-            --name $CLUSTER_NAME \
-            --node-count 1 \
-            --enable-addons monitoring \
-            --generate-ssh-keys \
-            --node-vm-size Standard_DS2_v2 || echo "AKS cluster already exists."
-
-      # Step 9: Get AKS Credentials
+      # Step 8: Get AKS Credentials
       - name: Get AKS Credentials
         run: |
           az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
 
-      # Step 10: Deploy App to AKS (using YAML files in repo)
+      # Step 9: Deploy App to AKS (using YAML files in repo)
       - name: Deploy App to AKS
         run: |
           kubectl apply -f deployment.yaml
           kubectl apply -f service.yaml
 
-      # Step 11: Set up Helm
+      # Step 10: Set up Helm
       - name: Setup Helm
         uses: azure/setup-helm@v3
 
-      # Step 12: Install Prometheus and Grafana
+      # Step 11: Install Prometheus and Grafana
       - name: Install Prometheus and Grafana
         run: |
           kubectl create namespace monitoring || true
@@ -97,6 +86,6 @@ jobs:
             --set adminPassword='admin' \
             --set service.type=LoadBalancer
 
-      # Step 13: Output Monitoring Access Info
+      # Step 12: Output Monitoring Access Info
       - name: Show Grafana External IP
         run: kubectl get svc -n monitoring
