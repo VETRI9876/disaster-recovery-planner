@@ -2,12 +2,23 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 import time
+import tempfile
 
 def test_application():
     try:
-        # Set up Chrome WebDriver (with Selenium and ChromeDriver)
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        # Set up Chrome WebDriver with ChromeOptions
+        chrome_options = Options()
+        
+        # Create a temporary directory for user data
+        user_data_dir = tempfile.mkdtemp()
+
+        # Add user-data-dir argument
+        chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
+        
+        # Initialize the WebDriver
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
         # Navigate to the URL of your application
         driver.get('http://localhost:8085')  # Adjust this URL if needed for your app
