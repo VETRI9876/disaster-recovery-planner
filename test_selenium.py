@@ -22,39 +22,32 @@ def test_application():
         driver.get('http://localhost:8085')
         wait = WebDriverWait(driver, 10)
 
-        # ✅ Check H1 tag
         heading = wait.until(EC.presence_of_element_located((By.TAG_NAME, 'h1')))
         print("✅ H1 tag found:", heading.text)
 
-        # ✅ Fill in form fields
         driver.find_element(By.ID, "system-name").send_keys("Test System")
         driver.find_element(By.ID, "rto").send_keys("5")
         driver.find_element(By.ID, "rpo").send_keys("2")
 
-        # ✅ Select dropdown
         status_dropdown = driver.find_element(By.ID, "status")
         status_dropdown.click()
         time.sleep(1)
         status_option = driver.find_element(By.XPATH, "//div[text()='Ready']")
         status_option.click()
 
-        # ✅ Click the button
         driver.find_element(By.ID, "add-button").click()
-        time.sleep(2)  # Wait for table/chart to update
+        time.sleep(2)
 
-        # ✅ Check table for new entry
         table = driver.find_element(By.ID, "table-container")
         assert "Test System" in table.text
         print("✅ Table updated with new system.")
 
-        # ✅ Check chart exists
         chart = driver.find_element(By.ID, "status-chart")
         assert chart is not None
         print("✅ Chart is present.")
 
         driver.quit()
 
-        # ✅ Success message
         print("✅ Whole application successfully tested!")
 
     except Exception as e:
